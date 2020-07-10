@@ -74,6 +74,23 @@ for c in cities:
 # Salt Lake City: (40.7774,-111.9301)
 
 # TODO Get latitude and longitude values from the user
+def square_maker(lat1: float, lon1: float, lat2: float, lon2: float) -> tuple:
+  lat_min = min(lat1, lat2)
+  lat_max = max(lat1, lat2)
+  lon_min = min(lon1, lon2)
+  lom_max = max(lon1, lon2)
+
+  a = (lat_min, lon_min)
+  b = (lat_min, lon_max)
+  c = (lat_max, lon_min)
+  d = (lat_max, lon_max)
+
+  return a, b, c, d
+
+
+def is_city_in_square(city: "City", a: tuple, b: tuple, c: tuple, d: tuple) -> tuple:
+  return (a[0] < city.lat < d[0]) and (a[1] < city.lon < d[1])
+
 
 def cityreader_stretch(lat1, lon1, lat2, lon2, cities=[]):
   # within will hold the cities that fall within the specified region
@@ -82,5 +99,9 @@ def cityreader_stretch(lat1, lon1, lat2, lon2, cities=[]):
   # TODO Ensure that the lat and lon valuse are all floats
   # Go through each city and check to see if it falls within 
   # the specified coordinates.
+  a, b, c, d = square_maker(lat1, lon1, lat2, lon2)
+  for city in cities:
+    if is_city_in_square(city, a, b, c, d):
+      within.append(city)
 
   return within
