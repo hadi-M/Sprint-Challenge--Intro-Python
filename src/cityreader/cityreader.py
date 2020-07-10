@@ -1,6 +1,14 @@
 # Create a class to hold a city location. Call the class "City". It should have
 # fields for name, lat and lon (representing latitude and longitude).
+import csv
+from ipdb import set_trace as st
 
+
+class City():
+  def __init__(self, name, lat, lon):
+    self.name = name
+    self.lat = lat
+    self.lon = lon
 
 # We have a collection of US cities with population over 750,000 stored in the
 # file "cities.csv". (CSV stands for "comma-separated values".)
@@ -16,12 +24,19 @@
 # should not be loaded into a City object.
 cities = []
 
+
 def cityreader(cities=[]):
   # TODO Implement the functionality to read from the 'cities.csv' file
   # For each city record, create a new City instance and add it to the 
   # `cities` list
+  with open("./cities.csv", "r") as csv_file:
+    csv_reader = csv.reader(csv_file, delimiter=',')
+    next(csv_reader, None) 
+    for row in csv_reader:
+      cities.append(City(row[0], float(row[3]), float(row[4])))
     
-    return cities
+    # st()
+  return cities
 
 cityreader(cities)
 
@@ -59,6 +74,23 @@ for c in cities:
 # Salt Lake City: (40.7774,-111.9301)
 
 # TODO Get latitude and longitude values from the user
+def square_maker(lat1: float, lon1: float, lat2: float, lon2: float) -> tuple:
+  lat_min = min(lat1, lat2)
+  lat_max = max(lat1, lat2)
+  lon_min = min(lon1, lon2)
+  lom_max = max(lon1, lon2)
+
+  a = (lat_min, lon_min)
+  b = (lat_min, lon_max)
+  c = (lat_max, lon_min)
+  d = (lat_max, lon_max)
+
+  return a, b, c, d
+
+
+def is_city_in_square(city: "City", a: tuple, b: tuple, c: tuple, d: tuple) -> tuple:
+  return (a[0] < city.lat < d[0]) and (a[1] < city.lon < d[1])
+
 
 def cityreader_stretch(lat1, lon1, lat2, lon2, cities=[]):
   # within will hold the cities that fall within the specified region
@@ -67,5 +99,9 @@ def cityreader_stretch(lat1, lon1, lat2, lon2, cities=[]):
   # TODO Ensure that the lat and lon valuse are all floats
   # Go through each city and check to see if it falls within 
   # the specified coordinates.
+  a, b, c, d = square_maker(lat1, lon1, lat2, lon2)
+  for city in cities:
+    if is_city_in_square(city, a, b, c, d):
+      within.append(city)
 
   return within
